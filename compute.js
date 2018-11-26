@@ -59,10 +59,10 @@ function minus(x, y) {
     y = trimPrefix(y)
     if (!isNumber(x)) return NaN
     if (!isNumber(y)) return NaN
-    if (x === '0') return y
+    if (x === '0') return '-' + y
     if (y === '0') return x
     // 相等的2个数字相减 结果为0
-    if (x === y) return 0
+    if (x === y) return '0'
     // 如果都为负数相减 则结果为 |y| - |x|
     if (isNegative(x) && isNegative(y)) {
         x = x.substr(1)
@@ -81,28 +81,13 @@ function minus(x, y) {
     }
     // 结果是否负数flag
     let negative = false
-    // 长度小于被减数，则肯定是负数
-    if (x.length < y.length) {
+    // 比较减数与被减数的大小
+    if (!max(x, y)) {
         negative = true
         // 被减数互换, 结果等于 大数减小数的 负数
         let temp = x
         x = y
         y = temp
-        // [x, y] = [y, x] // node.js不太支持
-    } else if (x.length === y.length) {
-        // 长度相等，从第一位依次比较大小
-        let i = 0
-        while (i < x.length) {
-            if (x.charAt[i] < y.charAt[i]) {
-                negative = true
-                let temp = x
-                x = y
-                y = temp
-                // [x, y] = [y, x]
-                break
-            }
-            i++
-        }
     }
     // 从数字末尾开始做减法
     let lastX = x.length - 1
@@ -142,12 +127,11 @@ function multiply(x, y) {
     if (!isNumber(x)) return NaN
     if (!isNumber(y)) return NaN
     // 有1个数为零 则结果为0
-    if (x === '0' || y === '0') return 0
+    if (x === '0' || y === '0') return '0'
     // 结果是否负数flag
     let negative = false
     // 2个负数相乘 结果为正
     if (isNegative(x) && isNegative(y)) {
-        negative = false
         x = x.substr(1)
         y = y.substr(1)
     } else if (isNegative(x)) {
@@ -205,11 +189,63 @@ function multiply(x, y) {
     return result
 }
 // 除法
-function divide(x, b) {
+function divide(x, y, decimalNumber = 2) {
+    x = trimPrefix(x)
+    y = trimPrefix(y)
+    if (!isNumber(x)) return NaN
+    if (!isNumber(y)) return NaN
+    let negative = false
+    // 2个负数相除 结果为正
+    if (isNegative(x) && isNegative(y)) {
+        x = x.substr(1)
+        y = y.substr(1)
+    } else if (isNegative(x)) {
+        negative = true
+        x = x.substr(1)
+    } else if (isNegative(y)) {
+        negative = true
+        y = y.substr(1)
+    }
+    // x为零 则结果为0, y 不能为0
+    if (x === y) return (negative ? '-' : '') + '1'
+    if (x === '0') return '0'
+    if (y === '0') return NaN
+    // 结果是否负数flag
 
+    let result = ''
+    let compare = x
+    let i = 0
+
+    // 无限做减法, 满足小数部分为止
+    do {
+        // 第二次循环后 为小数部分，需要加 .
+        if (i === 1) {
+            result = result + '.'
+        }
+        // 如果余数和 被除数相等 直接加1
+        if (compare === y) {
+            result = result + '1'
+        }
+        // 比较除数和被除数大小，如果被除数小于除数，则被除数补零，继续循环
+        else if (max(compare, y)) {
+            let totalReduction = 0
+            while (max(compare, y)) {
+                totalReduction++
+                compare = minus(compare, y)
+            }
+            result = result + totalReduction
+        } else {
+            result = result + '0'
+        }
+        i++
+        compare = trimPrefix(compare + '0')
+    } while (i < decimalNumber)
+
+    result = (negative ? '-' : '') + result
+    return result
 }
 
-// 去掉首位的空格
+// 去掉首位的空格 (去掉了小数部分， 暂时没考虑小数的运算)
 function trimPrefix(x) {
     if (typeof x === 'number') {
         x = x + ''
@@ -243,6 +279,25 @@ function isNegative(x) {
     return x.charAt(0) === '-'
 }
 
+function max(x, y) {
+    // 长度小于被减数，则肯定是负数
+    if (x.length < y.length) {
+        return false
+    } else if (x.length === y.length) {
+        // 长度相等，从第一位依次比较大小
+        let i = 0
+        while (i < x.length) {
+            if (x.charAt(i) === y.charAt(i)) {
+                i++
+            } else if (x.charAt(i) < y.charAt(i)) {
+                return false
+            } else {
+                return true
+            }
+        }
+    }
+    return true
+}
 
 let a = '666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666'
 let b = '77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777'
@@ -257,3 +312,8 @@ console.log(multiply('-1024', 10241024))
 console.log(multiply('-1024', '-10241024'))
 console.log(multiply(a, b))
 console.log((1024 * -10241024) + '')
+console.log(divide(66666, 666, 10))
+console.log(divide(12012, 4, 0))
+console.log(divide(1224, 5))
+
+
