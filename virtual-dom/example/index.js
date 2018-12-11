@@ -3,7 +3,6 @@ import {
     h
 } from 'virtual-dom'
 
-
 let views = h('div', 'text', [
     h('p', { style: 'color: red;' }, [
         h('span', 'this is span')
@@ -17,10 +16,10 @@ let vnode = patch(document.getElementById('app'), views)
 
 
 let views2 = h('div', 'text', [
-    h('p', { style: 'color: red;' }, [
+    h('p', { style: 'color: green;' }, [
        'tetst'
     ]),
-    h('div', { style: 'color: red;' }, [
+    h('div', { style: 'color: blue;' }, [
         'hehhehe'
     ])
 ])

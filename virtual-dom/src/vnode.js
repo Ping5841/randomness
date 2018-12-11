@@ -1,5 +1,9 @@
 import { isPrimitive } from './util'
 
+/**
+ * VNode 类
+ * 用js对象 来表示一个dom对象
+ */
 export default class VNode {
     constructor(
         tag, // 标签名
