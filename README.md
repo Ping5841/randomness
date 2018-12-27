@@ -2,6 +2,7 @@
 
 - virtual-dom 简单的虚拟dom与diff过程的实现和详解 [点击查看介绍](https://github.com/Ping5841/randomness/tree/master/virtual-dom)
 
+- base64的介绍与js的实现方法 [查看](https://github.com/Ping5841/randomness/tree/master/base64)
 
 ---
 
